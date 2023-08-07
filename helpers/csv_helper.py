@@ -23,5 +23,7 @@ def read_file(file) -> (list[Player], set[Player], set[Player]):
                     gks.add(name)
                 if position == Position.Fixed:
                     fixeds.add(name)
+                if position == Position.Pivot:
+                    pivots.add(name)
 
-    return (result, gks, fixeds)
+    return (result, gks, fixeds , pivots)

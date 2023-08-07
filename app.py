@@ -3,7 +3,7 @@ from models.player import Player
 from team.pick import get_best_order_formula, get_players_order_by_rating
 
 
-def pick_teams(players: list[Player], gks: set[str], fixeds: set[str]):
+def pick_teams(players: list[Player], gks: set[str], fixeds: set[str], pivots: set[str]):
     order_formula = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
     total = len(players)
     if total < 15:
@@ -15,7 +15,7 @@ def pick_teams(players: list[Player], gks: set[str], fixeds: set[str]):
 
         sorted_players = get_players_order_by_rating(players)
 
-        get_best_order_formula(sorted_players, order_formula, gks, fixeds)
+        get_best_order_formula(sorted_players, order_formula, gks, fixeds, pivots)
 
         # print all the players that dont fit (ex 17 - 15 = 2) print last 2
         if not is_full and total > 15:
@@ -26,5 +26,5 @@ def pick_teams(players: list[Player], gks: set[str], fixeds: set[str]):
 
 
 file = "players.csv"
-(players, gks, fixeds) = read_file(file)
-pick_teams(players, gks, fixeds)
+(players, gks, fixeds, pivots) = read_file(file)
+pick_teams(players, gks, fixeds, pivots)

@@ -32,7 +32,7 @@ def get_best_order_formula(
     sorted_players: list[Player],
     order_formula: list[int],
     gks: set[str],
-    fixeds: set[str],
+    fixeds: set[str],pivots: set[str],
 ) -> list[int]:
     best_order_formula_guess = _full_formula(order_formula)
     max_diff_best = sys.maxsize
@@ -40,14 +40,14 @@ def get_best_order_formula(
     while count < MAX_TRIALS and max_diff_best > 0:
         shuffle(order_formula)
         full_formula = _full_formula(order_formula)
-        pick_results = _find_teams(sorted_players, full_formula, gks, fixeds)
+        pick_results = _find_teams(sorted_players, full_formula, gks, fixeds, pivots)
         if pick_results.max_diff <= max_diff_best:
             max_diff_best = pick_results.max_diff
             best_order_formula_guess = full_formula.copy()
         count += 1
 
     print("--------  Solution: --------\n")
-    pick_results = _find_teams(sorted_players, best_order_formula_guess, gks, fixeds)
+    pick_results = _find_teams(sorted_players, best_order_formula_guess, gks, fixeds,pivots)
 
     _print_teams(
         pick_results.team1,
@@ -69,12 +69,13 @@ def _find_teams(
     order_formula: list[int],
     gks: set[str],
     fixeds: set[str],
+    pivots: set[str],
 ) -> PickResults:
     team1 = _get_team_pick_by_order(sorted_players, order_formula, 1)
     team2 = _get_team_pick_by_order(sorted_players, order_formula, 2)
     team3 = _get_team_pick_by_order(sorted_players, order_formula, 3)
 
-    if _is_not_valid_team(team1, team2, team3, gks, fixeds):
+    if _is_not_valid_team(team1, team2, team3, gks, fixeds, pivots):
         return PickResults([], [], [], sys.maxsize, [])
 
     avgs = [mean(map(lambda x: x.rating, x)) for x in [team1, team2, team3]]
