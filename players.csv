@@ -1,34 +1,56 @@
-name,rating,intensity,position,is_going
-Dari,6.5,0,Wing,1
-Machon,7.5,0,Wing,1
-Diago,9.5,0,Fixed,1
-Dionlys,9.5,0,Fixed,1
-Xavi,9,0,Fixed,1
-Xavier,8,0,GK,1
-AngelL,9.5,0,Wing,1
-Rances,7,0,Pivot,1
-Reinier,5,0,Wing,1
-Roli,6.5,0,GK,1
-Rey,8,0,Wing,1
-Gerard,9,0,Wing,1
-Noel,5.5,0,Wing,1
-JorgeA,6,0,Wing,1
-Jose,6.5,0,Wing,1
-Juan,5.5,0,Wing,0
-Roli2,7.5,0,Wing,0
-Manuel,6,0,Wing,0
-Chicharo,7.5,0,Wing,0
-Anibal,7,0,Wing,0
-Gerardo,8,0,Pivot,0
-Marcos,8.5,0,Wing,0
-Raul,8.5,0,Fixed,0
-Juanito,7.5,0,Wing,0
-Karel,5,0,Wing,0
-Yoel,6,0,Wing,0
-DavidGK,6.5,0,GK,0
-DayronH,7,0,Wing,0
-David,7,0,Wing,0
-Harold,4.5,0,Wing,0
-Yassiel,5,0,Wing,0
-Gaby,5.5,0,Wing,0
-Pepe,5,0,Wing,0
+name,rating,intensity,position,is_base,is_going
+AngelL,8,0,Fixed,1,1
+Anibal,7,0,Wing,0,0
+Chicharo,8,0,Wing,1,0
+Carlos D,6.5,0,Wing,0,0
+Cesar Eibel,9.5,0,Fixed,1,0
+Dari,5.5,0,GK,0,1
+David Sabado,6.5,0,Wing,0,0
+Dayron Xavi,8,0,Fixed,1,0
+Dionlys,8.5,0,Fixed,1,0
+Diago,9,0,Fixed,1,0
+DayronH,7,0,Wing,0,0
+Eibel,6,0,Wing,0,1
+Ernesto CR,5.5,0,Wing,0,0
+Fernando,7.5,0,Wing,0,0
+Fando M,7,0,Wing,0,0
+Fando,5.5,0,Wing,0,0
+Fabian, 6.5,0,Wing,0,0
+Gerard,7.5,0,Wing,1,1
+Gerardo,8,0,Pivot,0,0
+Harold,4.5,0,Wing,0,0
+Ivan,6.5,0,Wing,0,0
+JorgeA,6.5,0,Wing,0,0
+Javi Yoa,7,0,Wing,0,1
+Javi Q,6.5,0,Wing,0,0
+Javi Eibel,6.5,0,Wing,0,0
+Jose,6.5,0,Wing,0,1
+Juanito,7,0,Wing,0,1
+Juan,5.5,0,Wing,0,0
+Jesus,8,0,Fixed,1,0
+Lichi,6.5,0,Fixed,0,0
+Manuel,7,0,Wing,0,0
+Machon,7,0,Wing,0,1
+Mandy,7,0,Wing,0,0
+Marlon,6.5,0,Wing,0,1
+Manolin,6,0,Wing,0,0
+Noel,6.5,0,Wing,0,0
+Rances,6.5,0,Pivot,0,0
+Reinier,6,0,Wing,0,0
+Roli,7,0,GK,0,1
+Roli2,7,0,Wing,0,0
+Raul,6.5,0,Wing,0,1
+Rene,6,0,Wing,0,0
+Rey,7,0,Wing,0,1
+Regueira,6,0,Wing,0,1
+Stephan,6.5,0,Wing,0,0
+Xavi,8.5,0,Fixed,1,0
+Xavier,7,0,GK,0,1
+Yoel,6.5,0,Wing,0,0
+Yoanner,7.5,0,Wing,1,1
+Jose Ivan,6.5,0,Wing,0,0
+Leo jr,5,0,Wing,0,0
+Richard Yoa,7,0,Wing,0,1
+Yainier Yoa,7,0,Wing,0,1
+Guille,6,0,Wing,0,1
+n/a,6,0,n/a,0,0

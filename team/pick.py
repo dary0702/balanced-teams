@@ -20,10 +20,6 @@ def get_players_order_by_rating(assisting_players: list[Player]) -> list[Player]
         for _, group in groupby(sorted_players, key=lambda player: player.rating)
     ]
 
-    # shuffle group so the pick order list is different every time
-    for group in groups:
-        shuffle(group)
-
     # concat all grouped items
     return list(chain.from_iterable(groups))
 
@@ -32,22 +28,34 @@ def get_best_order_formula(
     sorted_players: list[Player],
     order_formula: list[int],
     gks: set[str],
-    fixeds: set[str],pivots: set[str],
+    fixeds: set[str],
+    pivots: set[str],
+    base_count: int,
 ) -> list[int]:
-    best_order_formula_guess = _full_formula(order_formula)
+    best_order_formula_guess = order_formula.copy()
+    all_formulas = [best_order_formula_guess]
     max_diff_best = sys.maxsize
     count = 0
-    while count < MAX_TRIALS and max_diff_best > 0:
+    while count < MAX_TRIALS:
         shuffle(order_formula)
-        full_formula = _full_formula(order_formula)
-        pick_results = _find_teams(sorted_players, full_formula, gks, fixeds, pivots)
+        pick_results = _find_teams(
+            sorted_players, order_formula, gks, fixeds, pivots, base_count
+        )
         if pick_results.max_diff <= max_diff_best:
-            max_diff_best = pick_results.max_diff
-            best_order_formula_guess = full_formula.copy()
+            best_order_formula_guess = order_formula.copy()
+            if pick_results.max_diff < max_diff_best:
+                max_diff_best = pick_results.max_diff
+                all_formulas = [best_order_formula_guess]
+            else:
+                all_formulas.append(best_order_formula_guess)
+
         count += 1
 
     print("--------  Solution: --------\n")
-    pick_results = _find_teams(sorted_players, best_order_formula_guess, gks, fixeds,pivots)
+    shuffle(all_formulas)
+    pick_results = _find_teams(
+        sorted_players, all_formulas[0], gks, fixeds, pivots, base_count
+    )
 
     _print_teams(
         pick_results.team1,
@@ -56,12 +64,8 @@ def get_best_order_formula(
         pick_results.max_diff,
         pick_results.avgs,
     )
-    return best_order_formula_guess
 
-
-def _full_formula(order_formula: list[int]) -> list[int]:
-    # captains order they are already shuffled before so is never the same
-    return [1, 2, 3] + order_formula
+    return all_formulas
 
 
 def _find_teams(
@@ -70,12 +74,13 @@ def _find_teams(
     gks: set[str],
     fixeds: set[str],
     pivots: set[str],
+    base_count: int,
 ) -> PickResults:
     team1 = _get_team_pick_by_order(sorted_players, order_formula, 1)
     team2 = _get_team_pick_by_order(sorted_players, order_formula, 2)
     team3 = _get_team_pick_by_order(sorted_players, order_formula, 3)
 
-    if _is_not_valid_team(team1, team2, team3, gks, fixeds, pivots):
+    if _is_not_valid_team(team1, team2, team3, gks, fixeds, pivots, base_count):
         return PickResults([], [], [], sys.maxsize, [])
 
     avgs = [mean(map(lambda x: x.rating, x)) for x in [team1, team2, team3]]
@@ -91,9 +96,9 @@ def _print_teams(
     max_diff: float,
     avgs: list[float],
 ) -> None:
-    _print_players(team1, 1, avgs[0])
-    _print_players(team2, 2, avgs[1])
-    _print_players(team3, 3, avgs[2])
+    print_players(team1, 1, avgs[0])
+    print_players(team2, 2, avgs[1])
+    print_players(team3, 3, avgs[2])
 
     print("Diff best vs worst team: {:.2f}".format(max_diff))
 
@@ -115,10 +120,12 @@ def _is_not_valid_team(
     gks: set[str],
     fixeds: set[str],
     pivots: set[str],
+    base_count: int,
 ) -> bool:
-    gk_counts: tuple[int, int, int] = (0, 0, 0)
-    fixed_team_counts: tuple[int, int, int] = (0, 0, 0)
-    pivot_team_counts: tuple[int, int, int] = (0, 0, 0)
+    gk_counts: list[int] = [0, 0, 0]
+    fixed_team_counts: list[int] = [0, 0, 0]
+    pivot_team_counts: list[int] = [0, 0, 0]
+    base_team_counts: list[int] = [0, 0, 0]
 
     for from1, from2, from3 in zip(team1, team2, team3):
         # not more than 1 gk per team
@@ -141,9 +148,15 @@ def _is_not_valid_team(
 
         _add_teams_count_by_position(from1, from2, from3, pivots, pivot_team_counts)
 
+        _add_is_base_count(from1, from2, from3, base_team_counts)
+
         if _has_minimum_player_per_position(fixed_team_counts):
             return True
         if _has_minimum_player_per_position(pivot_team_counts):
+            return True
+
+    if base_count % 3 == 0:
+        if not all(x == base_team_counts[0] for x in base_team_counts):
             return True
 
     return False
@@ -154,8 +167,8 @@ def _add_teams_count_by_position(
     from2: Player,
     from3: Player,
     player_in_position: set[str],
-    team_counts: tuple[int, int, int],
-) -> tuple[int, int, int]:
+    team_counts: list[int],
+):
     if from1.name in player_in_position:
         team_counts[0] += 1
 
@@ -165,10 +178,24 @@ def _add_teams_count_by_position(
     if from3.name in player_in_position:
         team_counts[2] += 1
 
-    return team_counts
+
+def _add_is_base_count(
+    from1: Player,
+    from2: Player,
+    from3: Player,
+    team_counts: list[int],
+):
+    if from1.is_base == True:
+        team_counts[0] += 1
+
+    if from2.is_base:
+        team_counts[1] += 1
+
+    if from3.is_base:
+        team_counts[2] += 1
 
 
-def _has_minimum_player_per_position(position_team_count: tuple[int, int, int]) -> bool:
+def _has_minimum_player_per_position(position_team_count: list[int]) -> bool:
     """
     determines if a minimun of at least 1 player with this position per team is meet (fixed, pivot, wing)
 
@@ -177,13 +204,19 @@ def _has_minimum_player_per_position(position_team_count: tuple[int, int, int]) 
     returs True is condition meet, False otherwise
     """
     if 0 in position_team_count and any(fixed > 1 for fixed in position_team_count):
-        return
+        return True
     return False
 
 
-def _print_players(players: list[Player], team_number: int, team_rating: float) -> None:
-    print(f"({team_rating}) - Team {team_number}")
+def print_players(players: list[Player], team_number: int, team_rating: float) -> None:
+    if not team_number == 0:
+        print(f"({team_rating}) - Team {team_number}")
     for player in players:
-        print(f"({player.rating}) - {player.name} - {player.position}")
+        player_to_print = f"({player.rating}) - {player.name} - {player.position}"
+        print(
+            player_to_print
+            if not player.is_base
+            else player_to_print + "                                       - Base"
+        )
 
     print("\n")
